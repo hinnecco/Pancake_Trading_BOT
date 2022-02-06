@@ -139,7 +139,7 @@ Get token Approval if needed
 '''
 for i in range(len(tokenContracts)):
     if config.operationTypeList[i].lower() == strbuy:
-        if config.tokenpoolpair.lower() == strBUSD:
+        if config.pairList[i].lower() == strBUSD:
             tx_token = utils.getTokenApproval(tokenContracts[i],sender_address,web3)
             print(f"Approved: {web3.toHex(tx_token)}")
 
