@@ -175,7 +175,7 @@ for i in range(len(tokenContracts)):
 executeTradeList = []
 paramsList = []
 for i in range(len(config.tokenList)):
-    BNB_balance, TokenSymbol, NoOfTokens, params = utils.TradePreparation(web3,coinbalance,bnbbalance,busdbalance,config.tokenList[i],config.amountTypeList[i],config.amountList[i],driver)
+    BNB_balance, TokenSymbol, NoOfTokens, params = utils.TradePreparation(web3,coinBalanceList[i],bnbbalance,busdbalance,config.tokenList[i],config.amountTypeList[i],config.amountList[i],driver)
     executeTradeList.append(True)
     paramsList.append(params)
 
