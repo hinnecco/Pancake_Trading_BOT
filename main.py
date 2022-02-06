@@ -137,22 +137,22 @@ tokenContracts, symbolLists = getContracts(config.tokenList)
 '''
 Get token Approval if needed
 '''
-for i in range(len(tokenContracts)):
-    if config.operationTypeList[i].lower() == strbuy:
-        if config.pairList[i].lower() == strBUSD:
-            tx_token = utils.getTokenApproval(tokenContracts[i],sender_address,web3)
+def getApproval(operationType, pairToken, tokenContract):
+    if operationType.lower() == strbuy:
+        if pairToken.lower() == strBUSD:
+            tx_token = utils.getTokenApproval(tokenContract,sender_address,web3)
             print(f"Approved: {web3.toHex(tx_token)}")
 
-    if config.operationTypeList[i].lower() == strsell:
-        tx_token = utils.getTokenApproval(tokenContracts[i],sender_address,web3)
+    if operationType.lower() == strsell:
+        tx_token = utils.getTokenApproval(tokenContract,sender_address,web3)
         print(f"Approved: {web3.toHex(tx_token)}")
 
-    if config.operationTypeList[i].lower() == "stop-loss":
-        tx_token = utils.getTokenApproval(tokenContracts[i],sender_address,web3)
+    if operationType.lower() == "stop-loss":
+        tx_token = utils.getTokenApproval(tokenContract,sender_address,web3)
         print(f"Approved: {web3.toHex(tx_token)}")
 
-    if config.operationTypeList[i].lower() == "sell-stop-loss":
-        tx_token = utils.getTokenApproval(tokenContracts[i],sender_address,web3)
+    if operationType.lower() == "sell-stop-loss":
+        tx_token = utils.getTokenApproval(tokenContract,sender_address,web3)
         print(f"Approved: {web3.toHex(tx_token)}")
 
 
@@ -166,6 +166,8 @@ Get tokens Pair Smart Contract
 for i in range(len(tokenContracts)):
     coinBalanceList.append(coinBalance(tokenContracts[i],symbolLists[i]))
     pairAddressList.append(getPairAddress(Web3.toChecksumAddress(config.tokenList[i]),config.pairList[i]))
+    if config.MAKE_APPROVAL[i]:
+        getApproval(config.operationTypeList[i],config.pairList[i],tokenContracts[i])
     time.sleep(5)
 
 

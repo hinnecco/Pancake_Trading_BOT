@@ -26,7 +26,7 @@ private_key = os.environ['CHAVE_BOT']  # Add Your Private Key here including in 
 #"monitorSell" - check the price and if the price is above the target makes sound alert
 #"stop-loss" - will monitor the price and if it gets smaller than the target price in the targetStop will sell
 #"sell-stop-loss" - will monitor the price and if it get above the target price will sell or if it get below the stop target also sell
-operationTypeList = ['buy']
+operationTypeList = ['sell']
 
 
 #2- Smart contract address of token you want to buy
@@ -39,7 +39,7 @@ tokenList = ['0x0ecaf010fc192e2d5cbeb4dfb1fee20fbd733aa1']
 pairList = ['BUSD']
 
 #4- price to buy or sell
-targetpriceList = [1.4663]
+targetpriceList = [1.4856]
 
 #5 - stop target
 targetStopList = [0]
@@ -61,5 +61,12 @@ SHOW_TRANSACTION = True
 #True - Will send messages to Telegram
 #False - Will not send messages to Telegram
 SEND_TELEGRAM = True
+
+
+#10 - This option is to define if need or not get the approval to use the token, sometimes you already got the approval and changed your mind about the target price for example, 
+#so you can set to false, to avoid spend another GAS tax.
+#True - will make the approval transaction
+#False - will not make the approval transaction
+MAKE_APPROVAL = [False]
 
 
