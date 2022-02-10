@@ -6,7 +6,15 @@ import time
 import threading
 import config
 from web3 import Web3
-import winsound
+try:
+    import winsound
+except ImportError:
+    import os
+    def PlaySound(frequency,duration):
+        os.system('beep -f %s -l %s' % (frequency,duration))
+else:
+    def PlaySound(frequency,duration):
+        winsound.Beep(frequency,duration)
 
 
 WBNB_Address = None

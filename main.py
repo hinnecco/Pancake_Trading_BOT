@@ -44,7 +44,10 @@ coinBalanceList = []
 # add your blockchain connection information
 bsc = 'https://bsc-dataseed.binance.org/'    
 web3 = Web3(Web3.HTTPProvider(bsc))
-print(web3.isConnected())
+if web3.isConnected():
+    print("Connected to BSC!")
+else:
+    print("Fail to connect with BSC!")
 
 options = webdriver.ChromeOptions()
 options.headless = True
@@ -176,10 +179,20 @@ for i in range(len(tokenContracts)):
 
 executeTradeList = []
 paramsList = []
+print("Configurations:")
 for i in range(len(config.tokenList)):
     BNB_balance, TokenSymbol, NoOfTokens, params = utils.TradePreparation(web3,coinBalanceList[i],bnbbalance,busdbalance,config.tokenList[i],config.amountTypeList[i],config.amountList[i],driver)
     executeTradeList.append(True)
     paramsList.append(params)
+    print("*******************************")
+    print(f"Pair: {symbolLists[i].upper()}/{config.pairList[i].upper()}")
+    print(f"Operation Type: {config.operationTypeList[i]}")
+    print(f"Target Price: {config.targetpriceList[i]}")
+    print(f"Stop Target Price: {config.targetStopList[i]}")
+    if config.amountTypeList[i].lower() == "balance":
+        print(f"Amount: {coinBalanceList[i]}")
+    else:
+        print(f"Amount: {config.amountList[i]}")
 
 while True:
 
@@ -206,14 +219,16 @@ while True:
         #if monitorbuy and hit the target notify with sound
         if config.operationTypeList[i].lower() == 'monitorbuy':
             if price < config.targetpriceList[i]:
-                utils.notifyWithSound()
+                #utils.notifyWithSound()
+                telegram_send.send(messages=["Hit Buy Target{:.10f}".format(config.targetpriceList[i])])
 
 
         #if monitorsell and hit the target notify with sound
         elif config.operationTypeList[i].lower() == 'monitorsell':
             if price > config.targetpriceList[i]:
-                utils.notifyWithSound()
+                #utils.notifyWithSound()
                 print("Sell Target HIT {:.10f}".format(config.targetpriceList[i]))
+                telegram_send.send(messages=["Hit Sell Target {:.10f}".format(config.targetpriceList[i])])
 
 
         # if buy and hit the target, and has not executed the trade yet, so execute the trade regards its pair BNB or BUSD
