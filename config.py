@@ -26,7 +26,8 @@ private_key = os.environ['PY_VALUE']  # Add Your Private Key here including in t
 #"monitorSell" - check the price and if the price is above the target makes sound alert
 #"stop-loss" - will monitor the price and if it gets smaller than the target price in the targetStop will sell
 #"sell-stop-loss" - will monitor the price and if it get above the target price will sell or if it get below the stop target also sell
-operationTypeList = ['monitorsell'
+#"sell-buy"
+operationTypeList = ['buy'
     #,'monitorsell'
     ]
 
@@ -48,13 +49,13 @@ pairList = [
 
 #4- price to buy or sell
 targetpriceList = [
-    2.44
+    1.55
     #,0.039
     ]
 
 #5 - stop target
 targetStopList = [
-    0
+    1.68
     #,0
     ]
 

@@ -158,6 +158,10 @@ def getApproval(operationType, pairToken, tokenContract):
         tx_token = utils.getTokenApproval(tokenContract,sender_address,web3)
         print(f"Approved: {web3.toHex(tx_token)}")
 
+    if operationType.lower() == "sell-buy":
+        tx_token = utils.getTokenApproval(tokenContract,sender_address,web3)
+        print(f"Approved: {web3.toHex(tx_token)}")
+
 
 #########################################################################################################################################################################################
 '''
@@ -220,15 +224,18 @@ while True:
         if config.operationTypeList[i].lower() == 'monitorbuy':
             if price < config.targetpriceList[i]:
                 #utils.notifyWithSound()
-                telegram_send.send(messages=["Hit Buy Target{:.10f}".format(config.targetpriceList[i])])
+                print(f"Hit Buy Target: {config.targetpriceList[i]} Price: {price}")
+                if config.SEND_TELEGRAM:
+                    telegram_send.send(messages=[f"Hit Buy Target: {config.targetpriceList[i]} Price: {price}"])
 
 
         #if monitorsell and hit the target notify with sound
         elif config.operationTypeList[i].lower() == 'monitorsell':
             if price > config.targetpriceList[i]:
                 #utils.notifyWithSound()
-                print("Sell Target HIT {:.10f}".format(config.targetpriceList[i]))
-                telegram_send.send(messages=["Hit Sell Target {:.10f}".format(config.targetpriceList[i])])
+                print(f"Hit Sell Target: {config.targetpriceList[i]} Price: {price}")
+                if config.SEND_TELEGRAM:
+                    telegram_send.send(messages=[f"Hit Sell Target: {config.targetpriceList[i]} Price: {price}"])
 
 
         # if buy and hit the target, and has not executed the trade yet, so execute the trade regards its pair BNB or BUSD
@@ -243,10 +250,10 @@ while True:
                     transaction.join()
                     tx, Lasttrade_message = transaction.result
                     if tx not in "Failed":
-                        executeTrade = False
+                        executeTradeList[i] = False
+                        print(f"Hit Buy Target: {config.targetpriceList[i]} Price: {price}")
                         if config.SEND_TELEGRAM:
-                            telegram_send.send(messages=["Buy Target HIT {:.10f}".format(config.targetpriceList[i])])
-                        print("Buy Target HIT {:.10f}".format(config.targetpriceList[i]))
+                            telegram_send.send(messages=[f"Hit Buy Target: {config.targetpriceList[i]} Price: {price}"])
                         if config.SHOW_TRANSACTION:
                             showResults(tokenContracts[i],symbolLists[i])
                         
@@ -263,10 +270,10 @@ while True:
                     transaction.join()
                     tx, Lasttrade_message = transaction.result
                     if tx not in "Failed":
-                        executeTrade = False
-                        print("Sell Target HIT {:.10f}".format(config.targetpriceList[i]))
+                        executeTradeList[i] = False
+                        print(f"Hit Sell Target: {config.targetpriceList[i]} Price: {price}")
                         if config.SEND_TELEGRAM:
-                            telegram_send.send(messages=["Sell Target HIT {:.10f}".format(config.targetpriceList[i])])
+                            telegram_send.send(messages=[f"Hit Sell Target: {config.targetpriceList[i]} Price: {price}"])
                         if config.SHOW_TRANSACTION:
                             showResults(tokenContracts[i],symbolLists[i])
     
@@ -282,10 +289,10 @@ while True:
                     transaction.join()
                     tx, Lasttrade_message = transaction.result
                     if tx not in "Failed":
-                        executeTrade = False
-                        print("Sell Target HIT {:.10f}".format(config.targetStopList[i]))
+                        executeTradeList[i] = False
+                        print(f"Hit Stop Target: {config.targetStopList[i]} Price: {price}")
                         if config.SEND_TELEGRAM:
-                            telegram_send.send(messages=["Sell Target HIT {:.10f}".format(config.targetStopList[i])])
+                            telegram_send.send(messages=[f"Hit Stop Target: {config.targetStopList[i]} Price: {price}"])
                         if config.SHOW_TRANSACTION:
                             showResults(tokenContracts[i],symbolLists[i])
 
@@ -300,10 +307,10 @@ while True:
                     transaction.join()
                     tx, Lasttrade_message = transaction.result
                     if tx not in "Failed":
-                        executeTrade = False
-                        print("Sell Target HIT {:.10f}".format(config.targetStopList[i]))
+                        executeTradeList[i] = False
+                        print(f"Hit Stop Target: {config.targetStopList[i]} Price: {price}")
                         if config.SEND_TELEGRAM:
-                            telegram_send.send(messages=["Sell Target HIT {:.10f}".format(config.targetStopList[i])])
+                            telegram_send.send(messages=[f"Hit Stop Target: {config.targetStopList[i]} Price: {price}"])
                         if config.SHOW_TRANSACTION:
                             showResults(tokenContracts[i],symbolLists[i])
             elif price > config.targetpriceList[i]:
@@ -316,11 +323,46 @@ while True:
                     transaction.join()
                     tx, Lasttrade_message = transaction.result
                     if tx not in "Failed":
-                        executeTrade = False
-                        print("Sell Target HIT {:.10f}".format(config.targetpriceList[i]))
+                        executeTradeList[i] = False
+                        print(f"Hit Sell Target: {config.targetpriceList[i]} Price: {price}")
                         if config.SEND_TELEGRAM:
-                            telegram_send.send(messages=["Sell Target HIT {:.10f}".format(config.targetpriceList[i])])
+                            telegram_send.send(messages=[f"Hit Sell Target: {config.targetpriceList[i]} Price: {price}"])
                         if config.SHOW_TRANSACTION:
                             showResults(tokenContracts[i],symbolLists[i])
-                        
-    time.sleep(10)
+                   
+    time.sleep(6)
+'''
+        elif config.operationTypeList[i].lower() == "sell-buy":
+            if price > config.targetpriceList[i]:
+                if executeTradeList[i]:
+                    if config.pairList[i].lower() == strBUSD:    
+                        transaction = utils.ThreadWithResult(target=utils.sellTokensWithOtherToken, kwargs=paramsList[i])
+                    elif config.pairList[i].lower() == strBNB:
+                        transaction = utils.ThreadWithResult(target=utils.sellTokensWithBNB, kwargs=paramsList[i])
+                    transaction.start()
+                    transaction.join()
+                    tx, Lasttrade_message = transaction.result
+                    if tx not in "Failed":
+                        executeTrade = False
+                        print(f"Hit Stop Target: {config.targetpriceList[i]} Price: {price}")
+                        if config.SEND_TELEGRAM:
+                            telegram_send.send(messages=[f"Hit Stop Target: {config.targetpriceList[i]} Price: {price}"])
+                        if config.SHOW_TRANSACTION:
+                            showResults(tokenContracts[i],symbolLists[i])
+            elif price < config.targetStopList[i]:
+                if executeTradeList[i] == False:
+                    if config.pairList[i].lower() == strBUSD:    
+                        transaction = utils.ThreadWithResult(target=utils.sellTokensWithOtherToken, kwargs=paramsList[i])
+                    elif config.pairList[i].lower() == strBNB:
+                        transaction = utils.ThreadWithResult(target=utils.sellTokensWithBNB, kwargs=paramsList[i])
+                    transaction.start()
+                    transaction.join()
+                    tx, Lasttrade_message = transaction.result
+                    if tx not in "Failed":
+                        executeTrade = False
+                        print(f"Hit Stop Target: {config.targetStopList[i]} Price: {price}")
+                        if config.SEND_TELEGRAM:
+                            telegram_send.send(messages=[f"Hit Stop Target: {config.targetStopList[i]} Price: {price}"])
+                        if config.SHOW_TRANSACTION:
+                            showResults(tokenContracts[i],symbolLists[i])
+'''     
