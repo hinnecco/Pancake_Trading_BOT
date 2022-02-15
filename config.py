@@ -11,6 +11,8 @@ WBNB_ADDRESS = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
 #Smart Contract Address of BUSD
 BUSD_ADDRESS = "0xe9e7cea3dedca5984780bafc599bd69add087d56"
 
+PAIR_WBNB_BUSD_CONTRACT = "0x58F876857a02D6762E0101bb5C46A8c1ED44Dc16"
+
 #Here you can create environment variables or just substitute the values here 
 wallet_address = os.environ['WALLET_ADDRESS']  # Add Your Wallet Address here or create an environment variable with the name "WALLET_ADDRESS"
 private_key = os.environ['PY_VALUE']  # Add Your Private Key here including in the begin "0x" or create an enviroment variable with the name "CHAVE_BOT"
@@ -28,7 +30,7 @@ private_key = os.environ['PY_VALUE']  # Add Your Private Key here including in t
 #"sell-stop-loss" - will monitor the price and if it get above the target price will sell or if it get below the stop target also sell
 #"sell-buy"
 operationTypeList = ['buy'
-    #,'monitorsell'
+    #,'buy'
     ]
 
 
@@ -49,13 +51,13 @@ pairList = [
 
 #4- price to buy or sell
 targetpriceList = [
-    1.55
+    1.89
     #,0.039
     ]
 
 #5 - stop target
 targetStopList = [
-    1.68
+    1.5
     #,0
     ]
 
@@ -80,7 +82,7 @@ amountTypeList = [
 #True - will make the approval transaction
 #False - will not make the approval transaction
 MAKE_APPROVAL = [
-    False
+    True
     #,True
     ]
 

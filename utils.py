@@ -161,14 +161,10 @@ Inputs:
 Outputs:
 price - rate from tokenA and tokenB of the pair
 '''
-def checkPrice(pairAddress, web3, driver):
-    pairAddress = Web3.toChecksumAddress(pairAddress)
-    pairABI = tokenAbi(pairAddress, driver)
-    pairContract = web3.eth.contract(address=pairAddress, abi=pairABI)
+def checkPrice(pairContract):
     reserves = pairContract.functions.getReserves().call()
     if len(reserves) > 1:
         price = float(reserves[1])/float(reserves[0]) 
-        #print(price)
         return price
     else:
         return null

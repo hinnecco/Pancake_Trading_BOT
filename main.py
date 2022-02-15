@@ -37,6 +37,7 @@ coinToBuyContract = None
 coinbalance = None
 pairCoin_address = None
 pairAddressList = []
+pairContractList = []
 tokenContracts = []
 symbolLists = []
 coinBalanceList = []
@@ -172,13 +173,19 @@ Get tokens Pair Smart Contract
 '''  
 for i in range(len(tokenContracts)):
     coinBalanceList.append(coinBalance(tokenContracts[i],symbolLists[i]))
-    pairAddressList.append(getPairAddress(Web3.toChecksumAddress(config.tokenList[i]),config.pairList[i]))
+    pairAddress = getPairAddress(Web3.toChecksumAddress(config.tokenList[i]),config.pairList[i])
+    pairAddressList.append(pairAddress)
+    pairAddress = Web3.toChecksumAddress(pairAddress)
+    pairABI = utils.tokenAbi(pairAddress, driver)
+    pairContract = web3.eth.contract(address=pairAddress, abi=pairABI)
+    pairContractList.append(pairContract)
     if config.MAKE_APPROVAL[i]:
         getApproval(config.operationTypeList[i],config.pairList[i],tokenContracts[i])
     time.sleep(5)
 
-
-
+pairAddress = Web3.toChecksumAddress(config.PAIR_WBNB_BUSD_CONTRACT)
+pairABI = utils.tokenAbi(pairAddress, driver)
+pairBNBBUSDContract = web3.eth.contract(address=pairAddress, abi=pairABI)
 
 
 executeTradeList = []
@@ -204,12 +211,12 @@ while True:
 
         #check price for a token with BUSD as pair
         if config.pairList[i].lower() == strBUSD:
-            price = utils.checkPrice(pairAddressList[i], web3,driver)
+            price = utils.checkPrice(pairContractList[i])
 
         #check price for a token with BNB as pair
         elif config.pairList[i].lower() == strBNB:
-            price1 = utils.checkPrice(pairAddressList[i], web3,driver)
-            price2 = utils.checkPrice(pairWBNB_BUSD_address, web3,driver)
+            price1 = utils.checkPrice(pairContractList[i])
+            price2 = utils.checkPrice(pairBNBBUSDContract)
             price = price2*price1
 
     
@@ -250,7 +257,7 @@ while True:
                     transaction.join()
                     tx, Lasttrade_message = transaction.result
                     if tx not in "Failed":
-                        executeTradeList[i] = False
+                        executeTrade = False
                         print(f"Hit Buy Target: {config.targetpriceList[i]} Price: {price}")
                         if config.SEND_TELEGRAM:
                             telegram_send.send(messages=[f"Hit Buy Target: {config.targetpriceList[i]} Price: {price}"])
@@ -270,7 +277,7 @@ while True:
                     transaction.join()
                     tx, Lasttrade_message = transaction.result
                     if tx not in "Failed":
-                        executeTradeList[i] = False
+                        executeTrade = False
                         print(f"Hit Sell Target: {config.targetpriceList[i]} Price: {price}")
                         if config.SEND_TELEGRAM:
                             telegram_send.send(messages=[f"Hit Sell Target: {config.targetpriceList[i]} Price: {price}"])
@@ -289,7 +296,7 @@ while True:
                     transaction.join()
                     tx, Lasttrade_message = transaction.result
                     if tx not in "Failed":
-                        executeTradeList[i] = False
+                        executeTrade = False
                         print(f"Hit Stop Target: {config.targetStopList[i]} Price: {price}")
                         if config.SEND_TELEGRAM:
                             telegram_send.send(messages=[f"Hit Stop Target: {config.targetStopList[i]} Price: {price}"])
@@ -307,7 +314,7 @@ while True:
                     transaction.join()
                     tx, Lasttrade_message = transaction.result
                     if tx not in "Failed":
-                        executeTradeList[i] = False
+                        executeTrade = False
                         print(f"Hit Stop Target: {config.targetStopList[i]} Price: {price}")
                         if config.SEND_TELEGRAM:
                             telegram_send.send(messages=[f"Hit Stop Target: {config.targetStopList[i]} Price: {price}"])
@@ -323,14 +330,14 @@ while True:
                     transaction.join()
                     tx, Lasttrade_message = transaction.result
                     if tx not in "Failed":
-                        executeTradeList[i] = False
+                        executeTrade = False
                         print(f"Hit Sell Target: {config.targetpriceList[i]} Price: {price}")
                         if config.SEND_TELEGRAM:
                             telegram_send.send(messages=[f"Hit Sell Target: {config.targetpriceList[i]} Price: {price}"])
                         if config.SHOW_TRANSACTION:
                             showResults(tokenContracts[i],symbolLists[i])
                    
-    time.sleep(6)
+    time.sleep(7)
 '''
         elif config.operationTypeList[i].lower() == "sell-buy":
             if price > config.targetpriceList[i]:
